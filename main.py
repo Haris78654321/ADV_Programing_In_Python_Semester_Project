@@ -1,8 +1,12 @@
 import streamlit as st
 import page1
+import page2
+import page3
 
 PAGES = {
-    "Page 1": page1,
+    "Data Filter": page1,
+    "Performance Analysis": page2,
+    "Price & Market Trends": page3
 }
 
 def main():
