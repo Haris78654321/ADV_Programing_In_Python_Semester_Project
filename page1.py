@@ -131,7 +131,7 @@ def app():
                 }
             ))
 
-            # NEW: Country Distribution Charts
+            # Country Distribution Charts
             st.subheader("Country Distribution Analysis")
             col1, col2 = st.columns(2)
             
@@ -160,6 +160,47 @@ def app():
                 )
                 fig_pie.update_traces(textposition='inside', textinfo='percent+label')
                 st.plotly_chart(fig_pie, use_container_width=True)
+
+            # NEW: Model Distribution by Manufacturer Section
+            st.subheader("Model Distribution by Manufacturer")
+            
+            # Get unique makes from filtered data
+            available_makes = sorted(filtered_df["Make"].unique().tolist())
+            selected_make = st.selectbox("Select Manufacturer", available_makes)
+            
+            if selected_make:
+                make_df = filtered_df[filtered_df["Make"] == selected_make]
+                model_counts = make_df["Model"].value_counts().reset_index()
+                model_counts.columns = ["Model", "Count"]
+                
+                col3, col4 = st.columns(2)
+                
+                with col3:
+                    # Histogram showing models for selected make
+                    fig_model_bar = px.bar(
+                        model_counts.sort_values("Count", ascending=False),
+                        x="Model",
+                        y="Count",
+                        title=f"Models by {selected_make}",
+                        color="Model",
+                        labels={"Model": "Model Name", "Count": "Number of Cars"},
+                        height=400
+                    )
+                    st.plotly_chart(fig_model_bar, use_container_width=True)
+                
+                with col4:
+                    # Pie chart showing model distribution
+                    fig_model_pie = px.pie(
+                        model_counts,
+                        values="Count",
+                        names="Model",
+                        title=f"Model Share for {selected_make}",
+                        height=400,
+                        hole=0.3
+                    )
+                    fig_model_pie.update_traces(textposition='inside', textinfo='percent+label')
+                    st.plotly_chart(fig_model_pie, use_container_width=True)
+
         else:
             st.warning("No valid country coordinates found for the filtered data")
     else:
