@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+import plotly.express as px
 from clean import load_and_clean_data
 
 def app():
@@ -129,12 +130,42 @@ def app():
                     }
                 }
             ))
+
+            # NEW: Country Distribution Charts
+            st.subheader("Country Distribution Analysis")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Histogram showing total cars per country
+                fig_bar = px.bar(
+                    origin_counts.sort_values("Count", ascending=False),
+                    x="Origin",
+                    y="Count",
+                    title="Total Cars by Country",
+                    color="Origin",
+                    labels={"Origin": "Country", "Count": "Number of Cars"},
+                    height=400
+                )
+                st.plotly_chart(fig_bar, use_container_width=True)
+            
+            with col2:
+                # Pie chart showing market share
+                fig_pie = px.pie(
+                    origin_counts,
+                    values="Count",
+                    names="Origin",
+                    title="Market Share by Country",
+                    height=400,
+                    hole=0.3
+                )
+                fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+                st.plotly_chart(fig_pie, use_container_width=True)
         else:
             st.warning("No valid country coordinates found for the filtered data")
     else:
         st.warning("No cars match the selected filters")
 
-    # Show data table after map
+    # Show data table
     st.subheader("Filtered Car Data")
     st.write(f"Showing {filtered_df.shape[0]} cars")
     st.dataframe(filtered_df)
