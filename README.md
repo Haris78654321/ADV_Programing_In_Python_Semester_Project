@@ -58,6 +58,10 @@ Raw data is cleaned and preprocessed in the `data/clean_data.py` module.
 
 All dependencies are listed 
 
+make a text file named => requirements.txt
+
+add all these in that text file 
+
     streamlit>=1.30.0
     pandas>=1.5.0
     numpy>=1.23.0
