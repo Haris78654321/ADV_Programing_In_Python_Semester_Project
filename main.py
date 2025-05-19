@@ -1,10 +1,12 @@
 import streamlit as st
-from modules import data_explorer, overview_dashboard, msrp_trend, prediction_tool
 
+# ✅ This MUST be the very first Streamlit command
 st.set_page_config(page_title="Car Analytics Dashboard", layout="wide")
 
+from modules import title_page, data_explorer, overview_dashboard, msrp_trend, prediction_tool
 
 PAGES = {
+    "🏠 Welcome Page": title_page,
     "🔎 Data Explorer": data_explorer,
     "📊 Overview Dashboard": overview_dashboard,
     "📈 MSRP Trend Analysis": msrp_trend,
