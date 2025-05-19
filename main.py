@@ -1,12 +1,14 @@
 import streamlit as st
-import page1
-import page2
-import page3
+from modules import data_explorer, overview_dashboard, msrp_trend, prediction_tool
+
+st.set_page_config(page_title="Car Analytics Dashboard", layout="wide")
+
 
 PAGES = {
-    "Data Filter": page1,
-    "Performance Analysis": page2,
-    "Price & Market Trends": page3
+    "🔎 Data Explorer": data_explorer,
+    "📊 Overview Dashboard": overview_dashboard,
+    "📈 MSRP Trend Analysis": msrp_trend,
+    "🤖 ML Price & MPG Predictor": prediction_tool
 }
 
 def main():

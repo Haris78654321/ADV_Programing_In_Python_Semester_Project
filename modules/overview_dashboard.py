@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from clean import load_and_clean_data
+from data.clean_data import load_and_clean_data
 
 def app():
     st.title("Car Performance Analysis")

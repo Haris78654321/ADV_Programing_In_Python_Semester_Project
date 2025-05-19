@@ -1,6 +1,6 @@
 import pandas as pd
 
-def load_and_clean_data(file_path="CARS_COUNTRY.xlsx"):
+def load_and_clean_data(file_path="assets/CARS_COUNTRY.xlsx"):
     df = pd.read_excel(file_path, sheet_name="data")
     
     # Standardize column names (remove extra spaces and ensure consistent capitalization)

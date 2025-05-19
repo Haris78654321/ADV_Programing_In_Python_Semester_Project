@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import pydeck as pdk
 import plotly.express as px
-from clean import load_and_clean_data
+from data.clean_data import load_and_clean_data
 
 def app():
-    st.title("Car Dataset Filter")
+    st.title("🌍 Car Dataset Explorer")
 
     # Load data
     df = load_and_clean_data()
