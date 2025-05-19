@@ -73,6 +73,24 @@ Install them using:
 
     pip install -r requirements.txt
 
+🚀 How to Run the Application
+    📥 Clone the Repository on your code editor terminal
+
+        git clone https://github.com/Haris78654321/ADV_Programing_In_Python_Semester_Project
+
+
+📂 Navigate to the Project Directory
+
+    cd ADV_Programing_In_Python_Semester_Project
+
+▶️ Run the Streamlit App
+
+    streamlit run main.py
+
+Make sure you've already installed the required dependencies using:
+
+pip install -r requirements.txt
+
 🧠 Technologies Used
     
     Python
