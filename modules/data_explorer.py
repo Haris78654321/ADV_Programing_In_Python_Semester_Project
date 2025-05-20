@@ -9,21 +9,30 @@ def app():
     # Load and clean data
     df = load_and_clean_data()
 
-    # Sidebar filters
+    # Sidebar filters with interdependencies
     st.sidebar.header("Filters")
 
-    dropdown_cols = [
+    # Define dropdown filter order
+    dropdown_order = [
         "Origin", "Make", "Model", "Engine Fuel Type", "Transmission Type",
         "Driven_Wheels", "Market Category", "Vehicle Size", "Vehicle Style",
         "Number of Doors", "Engine Cylinders"
     ]
 
     dropdown_filters = {}
-    for col in dropdown_cols:
-        options = ["All"] + sorted(df[col].dropna().astype(str).unique().tolist())
-        selected = st.sidebar.selectbox(f"{col}", options)
+    temp_df = df.copy()
+
+    # Dynamically generate dropdowns based on prior selections
+    for col in dropdown_order:
+        options = ["All"] + sorted(temp_df[col].dropna().astype(str).unique())
+        selected = st.sidebar.selectbox(f"{col}", options, key=col)
         dropdown_filters[col] = selected
 
+        # Narrow down for next dropdown
+        if selected != "All":
+            temp_df = temp_df[temp_df[col].astype(str) == selected]
+
+    # Continuous numeric filters
     numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
     slider_cols = [col for col in numeric_cols if col not in ["Number of Doors", "Engine Cylinders"]]
 
@@ -34,11 +43,12 @@ def app():
         selected_range = st.sidebar.slider(f"{col}", min_val, max_val, (min_val, max_val))
         cont_filters[col] = selected_range
 
-    # Apply filters
+    # Apply all filters
     filtered_df = df.copy()
     for col, val in dropdown_filters.items():
         if val != "All":
             filtered_df = filtered_df[filtered_df[col].astype(str) == val]
+
     for col, (min_val, max_val) in cont_filters.items():
         filtered_df = filtered_df[(filtered_df[col] >= min_val) & (filtered_df[col] <= max_val)]
 
@@ -79,19 +89,22 @@ def app():
             st.plotly_chart(fig_pie, use_container_width=True)
 
         st.subheader("🚘 Models by Selected Make")
-        selected_make = st.selectbox("Select Make", sorted(filtered_df["Make"].unique()))
-        make_df = filtered_df[filtered_df["Make"] == selected_make]
-        model_counts = make_df["Model"].value_counts().reset_index()
-        model_counts.columns = ["Model", "Count"]
 
-        col3, col4 = st.columns(2)
-        with col3:
-            fig_model_bar = px.bar(model_counts, x="Model", y="Count", color="Model", title="Models Distribution")
-            st.plotly_chart(fig_model_bar, use_container_width=True)
-        with col4:
-            fig_model_pie = px.pie(model_counts, names="Model", values="Count", hole=0.3, title="Model Share")
-            st.plotly_chart(fig_model_pie, use_container_width=True)
+        if not filtered_df["Make"].empty:
+            selected_make = st.selectbox("Select Make", sorted(filtered_df["Make"].unique()))
+            make_df = filtered_df[filtered_df["Make"] == selected_make]
+            model_counts = make_df["Model"].value_counts().reset_index()
+            model_counts.columns = ["Model", "Count"]
 
+            col3, col4 = st.columns(2)
+            with col3:
+                fig_model_bar = px.bar(model_counts, x="Model", y="Count", color="Model", title="Models Distribution")
+                st.plotly_chart(fig_model_bar, use_container_width=True)
+            with col4:
+                fig_model_pie = px.pie(model_counts, names="Model", values="Count", hole=0.3, title="Model Share")
+                st.plotly_chart(fig_model_pie, use_container_width=True)
+        else:
+            st.info("No makes available with the current filter selection.")
     else:
         st.warning("No cars match the selected filters.")
 
@@ -99,6 +112,7 @@ def app():
     st.write(f"Showing {filtered_df.shape[0]} cars")
     st.dataframe(filtered_df)
 
+    # Excel export
     if not filtered_df.empty:
         def to_excel(df):
             from io import BytesIO
@@ -108,7 +122,9 @@ def app():
             return output.getvalue()
 
         excel_data = to_excel(filtered_df)
-        st.download_button("Download Filtered Data (Excel)", data=excel_data, file_name="filtered_cars.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-if __name__ == "__main__":
-    app()
+        st.download_button(
+            "Download Filtered Data (Excel)",
+            data=excel_data,
+            file_name="filtered_cars.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )

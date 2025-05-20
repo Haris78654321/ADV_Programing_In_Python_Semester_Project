@@ -1,5 +1,3 @@
-# modules/title_page.py
-
 import streamlit as st
 
 def app():
@@ -34,25 +32,13 @@ def app():
             font-size: 18px;
             color: #333;
         }
-        .logo {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 120px;
-            margin-bottom: 30px;
-        }
         </style>
     """, unsafe_allow_html=True)
-
-    st.markdown(
-        '<img class="logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/National_University_of_Sciences_and_Technology_logo.svg/1200px-National_University_of_Sciences_and_Technology_logo.svg.png" alt="NUST Logo">',
-        unsafe_allow_html=True
-    )
 
     st.markdown("""
         <div class="title-container">
             <div class="title-text">Interactive Dashboard on Car Dataset</div>
-            <div class="subtitle-text">Final Project | Master’s in Data Science & AI</div>
+            <div class="subtitle-text">Final Project | Advanced Python Programming</div>
             <div class="group-title">Group Members:</div>
             <div class="member">1. Harish Zaman</div>
             <div class="member">2. Fahad Khan</div>
