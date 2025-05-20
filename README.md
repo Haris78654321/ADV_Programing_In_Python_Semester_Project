@@ -30,6 +30,20 @@ Raw data is cleaned and preprocessed in the `data/clean_data.py` module.
 
 ---
 
+## 🖥️ Title Page
+
+The app features a professional and visually structured **title page** with the following elements:
+
+- **University Logo** (NUST) displayed at the top center.
+- **Project Title**: *Interactive Dashboard on Car Dataset*
+- **Subtitle**: *Final Project | Department of Robotics & Artificial Intelligence*
+- **Group Members**:
+  1. Muhammad Haris Zaman  
+  2. Fahad Khan  
+  3. Muhammad Abrar Baig  
+
+The layout is styled using custom CSS for alignment, spacing, font sizes, and visual aesthetics to ensure a clean and polished first impression.
+
 ## 🌟 Major Features
 
 ### 1. 🔍 **Data Explorer**
@@ -68,6 +82,7 @@ add all these in that text file
     plotly>=5.18.0
     scikit-learn>=1.3.0
     openpyxl>=3.1.0
+    Pillow>=9.0.0
 
 Install them using:
 
