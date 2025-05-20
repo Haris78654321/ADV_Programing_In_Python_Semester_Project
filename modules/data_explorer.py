@@ -9,10 +9,9 @@ def app():
     # Load and clean data
     df = load_and_clean_data()
 
-    # Sidebar filters with interdependencies
+    # Sidebar filters with interdependencies (multi-select with "All" option)
     st.sidebar.header("Filters")
 
-    # Define dropdown filter order
     dropdown_order = [
         "Origin", "Make", "Model", "Engine Fuel Type", "Transmission Type",
         "Driven_Wheels", "Market Category", "Vehicle Size", "Vehicle Style",
@@ -22,33 +21,51 @@ def app():
     dropdown_filters = {}
     temp_df = df.copy()
 
-    # Dynamically generate dropdowns based on prior selections
     for col in dropdown_order:
-        options = ["All"] + sorted(temp_df[col].dropna().astype(str).unique())
-        selected = st.sidebar.selectbox(f"{col}", options, key=col)
-        dropdown_filters[col] = selected
+        options = sorted(temp_df[col].dropna().astype(str).unique())
+        options = ["All"] + options  # Add 'All' option at the top
 
-        # Narrow down for next dropdown
-        if selected != "All":
-            temp_df = temp_df[temp_df[col].astype(str) == selected]
+        selected = st.sidebar.multiselect(
+            f"{col}",
+            options=options,
+            default=["All"],  # default no filter
+            key=col
+        )
 
-    # Continuous numeric filters
+        if "All" in selected or len(selected) == 0:
+            # No filtering on this column
+            dropdown_filters[col] = options[1:]  # all real options
+        else:
+            # Filter by selected excluding "All"
+            dropdown_filters[col] = [x for x in selected if x != "All"]
+
+        # Narrow down next dropdown options if filtering applied
+        if len(dropdown_filters[col]) < len(options) - 1:
+            temp_df = temp_df[temp_df[col].astype(str).isin(dropdown_filters[col])]
+
+    # Continuous numeric filters (sliders)
     numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
     slider_cols = [col for col in numeric_cols if col not in ["Number of Doors", "Engine Cylinders"]]
 
     cont_filters = {}
     for col in slider_cols:
-        min_val = int(df[col].min())
-        max_val = int(df[col].max())
-        selected_range = st.sidebar.slider(f"{col}", min_val, max_val, (min_val, max_val))
+        min_val = float(df[col].min())
+        max_val = float(df[col].max())
+        step = (max_val - min_val) / 100 if max_val > min_val else 1
+        selected_range = st.sidebar.slider(
+            f"{col}", min_val, max_val, (min_val, max_val), step=step, key=col+"_slider"
+        )
         cont_filters[col] = selected_range
 
-    # Apply all filters
+    # Apply all filters to dataframe
     filtered_df = df.copy()
-    for col, val in dropdown_filters.items():
-        if val != "All":
-            filtered_df = filtered_df[filtered_df[col].astype(str) == val]
 
+    # Apply multi-select dropdown filters
+    for col, selected_vals in dropdown_filters.items():
+        if len(selected_vals) < len(df[col].dropna().unique()):
+            filtered_df = filtered_df[filtered_df[col].astype(str).isin(selected_vals)]
+
+    # Apply numeric range filters
     for col, (min_val, max_val) in cont_filters.items():
         filtered_df = filtered_df[(filtered_df[col] >= min_val) & (filtered_df[col] <= max_val)]
 
@@ -90,8 +107,9 @@ def app():
 
         st.subheader("🚘 Models by Selected Make")
 
-        if not filtered_df["Make"].empty:
-            selected_make = st.selectbox("Select Make", sorted(filtered_df["Make"].unique()))
+        makes_available = filtered_df["Make"].dropna().unique()
+        if len(makes_available) > 0:
+            selected_make = st.selectbox("Select Make", sorted(makes_available))
             make_df = filtered_df[filtered_df["Make"] == selected_make]
             model_counts = make_df["Model"].value_counts().reset_index()
             model_counts.columns = ["Model", "Count"]
