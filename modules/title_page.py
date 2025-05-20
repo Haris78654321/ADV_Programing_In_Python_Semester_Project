@@ -1,5 +1,3 @@
-# modules/title_page.py
-
 import streamlit as st
 from PIL import Image
 
@@ -39,16 +37,10 @@ def app():
         </style>
     """, unsafe_allow_html=True)
 
-    # Load and display the local logo image
-    logo_path = "assets/nust logo.jpg"  
-    image = Image.open(logo_path)
-    col1, col2, col3 = st.columns([1, 0.5, 1])
-    with col2:
-        st.image(image, use_container_width=False, width = 275)
     st.markdown("""
         <div class="title-container">
             <div class="title-text">Interactive Dashboard on Car Dataset</div>
-            <div class="subtitle-text">Final Project | Department of Robotics & Artificial Intelligence</div>
+            <div class="subtitle-text">Final Project | Advanced Python Programming</div>
             <div class="group-title">Group Members:</div>
             <div class="member">1. Muhammad Haris Zaman</div>
             <div class="member">2. Fahad Khan</div>
